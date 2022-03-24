@@ -29,7 +29,8 @@ namespace WorkflowCore.IntegrationTests.Scenarios
 
             //config logging
             var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
-            loggerFactory.AddConsole(LogLevel.Debug);
+            //TODO !ПЕРЕВОД НА .NET6
+            //loggerFactory.AddConsole(LogLevel.Debug);
 
             PersistenceProvider = serviceProvider.GetService<IPersistenceProvider>();
             Host = serviceProvider.GetService<IWorkflowHost>();

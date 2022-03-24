@@ -73,7 +73,8 @@ namespace ScratchPad
 
             //config logging
             var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
-            loggerFactory.AddDebug();
+            //TODO !ПЕРЕВОД НА .NET6
+            //loggerFactory.AddDebug();
             return serviceProvider;
         }
 

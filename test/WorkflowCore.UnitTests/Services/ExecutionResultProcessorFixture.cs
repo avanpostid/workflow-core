@@ -33,7 +33,8 @@ namespace WorkflowCore.UnitTests.Services
 
             //config logging
             var loggerFactory = new LoggerFactory();
-            loggerFactory.AddConsole(LogLevel.Debug);            
+            //TODO !ПЕРЕВОД НА .NET6
+            //loggerFactory.AddConsole(LogLevel.Debug);            
 
             Subject = new ExecutionResultProcessor(PointerFactory, DateTimeProvider, EventHub, ErrorHandlers, Options, loggerFactory);
         }
