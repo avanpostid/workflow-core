@@ -369,5 +369,10 @@ namespace WorkflowCore.Providers.AWS.Services
         {
             _provisioner.ProvisionTables().Wait();
         }
+
+        public Task RemoveEventsByKey(string eventKey)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

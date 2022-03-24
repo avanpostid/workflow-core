@@ -189,5 +189,10 @@ namespace WorkflowCore.Providers.Redis.Services
         public void EnsureStoreExists()
         {
         }
+
+        public Task RemoveEventsByKey(string eventKey)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

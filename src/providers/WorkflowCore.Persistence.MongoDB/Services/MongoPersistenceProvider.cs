@@ -217,5 +217,10 @@ namespace WorkflowCore.Persistence.MongoDB.Services
             if (errors.Any())
                 await ExecutionErrors.InsertManyAsync(errors);
         }
+
+        public Task RemoveEventsByKey(string eventKey)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
