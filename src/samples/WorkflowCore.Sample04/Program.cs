@@ -90,7 +90,8 @@ namespace WorkflowCore.Sample04
 
             //config logging
             var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
-            loggerFactory.AddDebug(LogLevel.Debug);
+            //TODO !ПЕРЕВОД НА .NET6
+            //loggerFactory.AddDebug(LogLevel.Debug);
             return serviceProvider;
         }
 

@@ -4,7 +4,7 @@
     <AssemblyTitle>Workflow Core PostgreSQL Persistence Provider</AssemblyTitle>
     <VersionPrefix>1.8.0</VersionPrefix>
     <Authors>Daniel Gerlag</Authors>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>WorkflowCore.Persistence.PostgreSQL</AssemblyName>
     <PackageId>Avanpost.WorkflowCore.Persistence.PostgreSQL</PackageId>
     <PackageTags>workflow;.NET;Core;state machine;WorkflowCore;PostgreSQL</PackageTags>
@@ -29,10 +29,13 @@
   <ItemGroup>
     <PackageReference Include="Npgsql" Version="4.0.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.1.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.0">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.3">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.1" />
   </ItemGroup>
 

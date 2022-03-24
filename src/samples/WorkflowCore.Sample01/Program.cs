@@ -37,8 +37,9 @@ namespace WorkflowCore.Sample01
             var serviceProvider = services.BuildServiceProvider();
 
             //config logging
-            var loggerFactory = serviceProvider.GetService<ILoggerFactory>();            
-            loggerFactory.AddDebug();
+            var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
+            //TODO !ПЕРЕВОД НА .NET6
+            //loggerFactory.AddDebug();
             return serviceProvider;
         }
 

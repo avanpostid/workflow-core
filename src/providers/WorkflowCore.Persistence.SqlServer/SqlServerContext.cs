@@ -35,37 +35,37 @@ namespace WorkflowCore.Persistence.SqlServer
         protected override void ConfigureSubscriptionStorage(EntityTypeBuilder<PersistedSubscription> builder)
         {
             builder.ToTable(_tablePrefix + "Subscription", _schema);
-            builder.Property(x => x.PersistenceId).UseSqlServerIdentityColumn();
+            builder.Property(x => x.PersistenceId).UseIdentityColumn();
         }
 
         protected override void ConfigureWorkflowStorage(EntityTypeBuilder<PersistedWorkflow> builder)
         {
             builder.ToTable(_tablePrefix + "Workflow", _schema);
-            builder.Property(x => x.PersistenceId).UseSqlServerIdentityColumn();
+            builder.Property(x => x.PersistenceId).UseIdentityColumn();
         }
         
         protected override void ConfigureExecutionPointerStorage(EntityTypeBuilder<PersistedExecutionPointer> builder)
         {
             builder.ToTable(_tablePrefix + "ExecutionPointer", _schema);
-            builder.Property(x => x.PersistenceId).UseSqlServerIdentityColumn();
+            builder.Property(x => x.PersistenceId).UseIdentityColumn();
         }
 
         protected override void ConfigureExecutionErrorStorage(EntityTypeBuilder<PersistedExecutionError> builder)
         {
             builder.ToTable(_tablePrefix + "ExecutionError", _schema);
-            builder.Property(x => x.PersistenceId).UseSqlServerIdentityColumn();
+            builder.Property(x => x.PersistenceId).UseIdentityColumn();
         }
 
         protected override void ConfigureExetensionAttributeStorage(EntityTypeBuilder<PersistedExtensionAttribute> builder)
         {
             builder.ToTable(_tablePrefix + "ExtensionAttribute", _schema);
-            builder.Property(x => x.PersistenceId).UseSqlServerIdentityColumn();
+            builder.Property(x => x.PersistenceId).UseIdentityColumn();
         }
 
         protected override void ConfigureEventStorage(EntityTypeBuilder<PersistedEvent> builder)
         {
             builder.ToTable(_tablePrefix + "Event", _schema);
-            builder.Property(x => x.PersistenceId).UseSqlServerIdentityColumn();
+            builder.Property(x => x.PersistenceId).UseIdentityColumn();
         }
     }
 }
