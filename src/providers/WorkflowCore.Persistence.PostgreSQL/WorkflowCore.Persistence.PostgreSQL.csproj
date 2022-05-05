@@ -20,7 +20,7 @@
 	<AssemblyVersion>2.0.0.0</AssemblyVersion>
 	<FileVersion>2.0.0.0</FileVersion>
 	<PackageId>Avanpost.WorkflowCore.Persistence.PostgreSQL</PackageId>
-	<Version>2.0.0.0-beta3</Version>
+	<Version>2.0.0.0-beta4</Version>
 	<Authors>Хорошеньков Максим</Authors>
 	<Company>Avanpost</Company>
 	<PackageTags>workflow .NET Core state machine</PackageTags>
@@ -32,8 +32,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Npgsql" Version="4.0.4" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.1.0" />
+    <PackageReference Include="Npgsql" Version="6.0.3" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.3">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
