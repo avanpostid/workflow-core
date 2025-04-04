@@ -25,47 +25,41 @@ namespace WorkflowCore.Persistence.EntityFramework.Services
 
         public async Task<string> CreateEventSubscription(EventSubscription subscription)
         {
-            using (var db = ConstructDbContext())
-            {
-                subscription.Id = Guid.NewGuid().ToString();
-                var persistable = subscription.ToPersistable();
-                var result = db.Set<PersistedSubscription>().Add(persistable);
-                db.SaveChanges();
-                return subscription.Id;
-            }
+            await using var db = ConstructDbContext();
+            subscription.Id = Guid.NewGuid().ToString();
+            var persistable = subscription.ToPersistable();
+            db.Set<PersistedSubscription>().Add(persistable);
+            await db.SaveChangesAsync();
+            return subscription.Id;
         }
 
         public async Task<string> CreateNewWorkflow(WorkflowInstance workflow)
         {
-            using (var db = ConstructDbContext())
-            {
-                workflow.Id = Guid.NewGuid().ToString();
-                var persistable = workflow.ToPersistable();
-                var result = db.Set<PersistedWorkflow>().Add(persistable);
-                db.SaveChanges();
-                return workflow.Id;
-            }
+            await using var db = ConstructDbContext();
+            workflow.Id = Guid.NewGuid().ToString();
+            var persistable = workflow.ToPersistable();
+            db.Set<PersistedWorkflow>().Add(persistable);
+            await db.SaveChangesAsync();
+            return workflow.Id;
         }
 
         public async Task<IEnumerable<string>> GetRunnableInstances(DateTime asAt)
         {
-            using (var db = ConstructDbContext())
-            {
-                var now = asAt.ToUniversalTime().Ticks;
-                var raw = db.Set<PersistedWorkflow>()
-                    .Where(x => x.NextExecution.HasValue && (x.NextExecution <= now) && (x.Status == WorkflowStatus.Runnable))
-                    .Select(x => x.InstanceId)
-                    .ToList();
+            await using var db = ConstructDbContext();
+            var now = asAt.ToUniversalTime().Ticks;
+            var raw = await db.Set<PersistedWorkflow>()
+                .Where(x => x.NextExecution.HasValue && (x.NextExecution <= now) && (x.Status == WorkflowStatus.Runnable))
+                .Select(x => x.InstanceId)
+                .ToArrayAsync();
 
-                return raw.Select(s => s.ToString()).ToList();
-            }
+            return raw.Select(s => s.ToString()).ToArray();
         }
 
         public async Task<IEnumerable<WorkflowInstance>> GetWorkflowInstances(WorkflowStatus? status, string type, DateTime? createdFrom, DateTime? createdTo, int skip, int take)
         {
-            using (var db = ConstructDbContext())
+            await using (var db = ConstructDbContext())
             {
-                IQueryable<PersistedWorkflow> query = db.Set<PersistedWorkflow>()
+                var query = db.Set<PersistedWorkflow>()
                     .Include(wf => wf.ExecutionPointers)
                     .ThenInclude(ep => ep.ExtensionAttributes)
                     .Include(wf => wf.ExecutionPointers)
@@ -83,80 +77,71 @@ namespace WorkflowCore.Persistence.EntityFramework.Services
                 if (createdTo.HasValue)
                     query = query.Where(x => x.CreateTime <= createdTo.Value);
 
-                var rawResult = query.Skip(skip).Take(take).ToList();
-                List<WorkflowInstance> result = new List<WorkflowInstance>();
+                var rawResult = await query.Skip(skip).Take(take).ToArrayAsync();
 
-                foreach (var item in rawResult)
-                    result.Add(item.ToWorkflowInstance());
-
-                return result;
+                return rawResult.Select(item => item.ToWorkflowInstance()).ToArray();
             }
         }
 
         public async Task<WorkflowInstance> GetWorkflowInstance(string Id)
         {
-            using (var db = ConstructDbContext())
-            {
-                var uid = new Guid(Id);
-                var raw = db.Set<PersistedWorkflow>()
-                    .Include(wf => wf.ExecutionPointers)
-                    .ThenInclude(ep => ep.ExtensionAttributes)
-                    .Include(wf => wf.ExecutionPointers)
-                    .First(x => x.InstanceId == uid);
+            await using var db = ConstructDbContext();
+            var uid = new Guid(Id);
+            var raw = await db.Set<PersistedWorkflow>()
+                .Include(wf => wf.ExecutionPointers)
+                .ThenInclude(ep => ep.ExtensionAttributes)
+                .Include(wf => wf.ExecutionPointers)
+                .FirstAsync(x => x.InstanceId == uid);
 
-                if (raw == null)
-                    return null;
+            if (raw == null)
+                return null;
 
-                return raw.ToWorkflowInstance();
-            }
+            return raw.ToWorkflowInstance();
         }
 
         public async Task<IEnumerable<WorkflowInstance>> GetWorkflowInstances(IEnumerable<string> ids)
         {
             if (ids == null)
             {
-                return new List<WorkflowInstance>();
+                return Enumerable.Empty<WorkflowInstance>();
             }
 
-            using (var db = ConstructDbContext())
-            {
-                var uids = ids.Select(i => new Guid(i));
-                var raw = db.Set<PersistedWorkflow>()
-                    .Include(wf => wf.ExecutionPointers)
-                    .ThenInclude(ep => ep.ExtensionAttributes)
-                    .Include(wf => wf.ExecutionPointers)
-                    .Where(x => uids.Contains(x.InstanceId));
+            await using var db = ConstructDbContext();
+            var uids = ids.Select(i => new Guid(i));
+            var raw = await db.Set<PersistedWorkflow>()
+                .Include(wf => wf.ExecutionPointers)
+                .ThenInclude(ep => ep.ExtensionAttributes)
+                .Include(wf => wf.ExecutionPointers)
+                .Where(x => uids.Contains(x.InstanceId))
+                .ToArrayAsync();
 
-                return (raw.ToList()).Select(i => i.ToWorkflowInstance());
-            }
+            return raw.Select(i => i.ToWorkflowInstance());
         }
 
         public async Task PersistWorkflow(WorkflowInstance workflow)
         {
-            using (var db = ConstructDbContext())
-            {
-                var uid = new Guid(workflow.Id);
-                var existingEntity = db.Set<PersistedWorkflow>()
-                    .Where(x => x.InstanceId == uid)
-                    .Include(wf => wf.ExecutionPointers)
-                    .ThenInclude(ep => ep.ExtensionAttributes)
-                    .Include(wf => wf.ExecutionPointers)
-                    .AsTracking()
-                    .First();
+            await using var db = ConstructDbContext();
+            var uid = new Guid(workflow.Id);
+            var existingEntity = await db.Set<PersistedWorkflow>()
+                .Where(x => x.InstanceId == uid)
+                .Include(wf => wf.ExecutionPointers)
+                .ThenInclude(ep => ep.ExtensionAttributes)
+                .Include(wf => wf.ExecutionPointers)
+                .AsTracking()
+                .FirstAsync();
 
-                var persistable = workflow.ToPersistable(existingEntity);
-                db.SaveChanges();
-            }
+            workflow.ToPersistable(existingEntity);
+            await db.SaveChangesAsync();
         }
 
         public async Task TerminateSubscription(string eventSubscriptionId)
         {
-            using (var db = ConstructDbContext())
+            await using (var db = ConstructDbContext())
             {
                 var uid = new Guid(eventSubscriptionId);
-                var existing = db.Set<PersistedSubscription>().First(x => x.SubscriptionId == uid);
+                var existing = await db.Set<PersistedSubscription>().FirstAsync(x => x.SubscriptionId == uid);
                 db.Set<PersistedSubscription>().Remove(existing);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
         }
 
@@ -180,141 +165,115 @@ namespace WorkflowCore.Persistence.EntityFramework.Services
 
         public async Task<IEnumerable<EventSubscription>> GetSubcriptions(string eventName, string eventKey, DateTime asOf)
         {
-            using (var db = ConstructDbContext())
+            await using var db = ConstructDbContext();
+            asOf = asOf.ToUniversalTime();
+            var query = db.Set<PersistedSubscription>()
+                .Where(x => x.EventKey == eventKey && x.SubscribeAsOf <= asOf).AsQueryable();
+            if (!string.IsNullOrEmpty(eventName))
             {
-                asOf = asOf.ToUniversalTime();
-                var querry = db.Set<PersistedSubscription>()
-                    .Where(x => x.EventKey == eventKey && x.SubscribeAsOf <= asOf).AsQueryable();
-                if (!string.IsNullOrEmpty(eventName))
-                {
-                    querry = querry.Where(x => x.EventName == eventName);
-                }
-
-                var raw = querry.ToList();
-                return raw.Select(item => item.ToEventSubscription()).ToList();
+                query = query.Where(x => x.EventName == eventName);
             }
+
+            var raw = await query.ToArrayAsync();
+            return raw.Select(item => item.ToEventSubscription()).ToArray();
         }
 
         public async Task<string> CreateEvent(Event newEvent)
         {
-            using (var db = ConstructDbContext())
-            {
-                newEvent.Id = Guid.NewGuid().ToString();
-                var persistable = newEvent.ToPersistable();
-                var result = db.Set<PersistedEvent>().Add(persistable);
-                db.SaveChanges();
-                return newEvent.Id;
-            }
+            await using var db = ConstructDbContext();
+            newEvent.Id = Guid.NewGuid().ToString();
+            var persistable = newEvent.ToPersistable();
+            db.Set<PersistedEvent>().Add(persistable);
+            await db.SaveChangesAsync();
+            return newEvent.Id;
         }
 
         public async Task<Event> GetEvent(string id)
         {
-            using (var db = ConstructDbContext())
-            {
-                Guid uid = new Guid(id);
-                var raw = db.Set<PersistedEvent>()
-                    .First(x => x.EventId == uid);
+            var uid = new Guid(id);
+            await using var db = ConstructDbContext();
+            var raw = await db.Set<PersistedEvent>()
+                .FirstAsync(x => x.EventId == uid);
 
-                if (raw == null)
-                    return null;
-
-                return raw.ToEvent();
-            }
+            return raw?.ToEvent();
         }
 
         public async Task<IEnumerable<string>> GetRunnableEvents(DateTime asAt)
         {
             var now = asAt.ToUniversalTime();
-            using (var db = ConstructDbContext())
-            {
-                asAt = asAt.ToUniversalTime();
-                var raw = db.Set<PersistedEvent>()
-                    .Where(x => !x.IsProcessed)
-                    .Where(x => x.EventTime <= now)
-                    .Select(x => x.EventId)
-                    .ToList();
+            await using var db = ConstructDbContext();
+            asAt = asAt.ToUniversalTime();
+            var raw = await db.Set<PersistedEvent>()
+                .Where(x => !x.IsProcessed)
+                .Where(x => x.EventTime <= now)
+                .Select(x => x.EventId)
+                .ToArrayAsync();
 
-                return raw.Select(s => s.ToString()).ToList();
-            }
+            return raw.Select(s => s.ToString()).ToArray();
         }
 
         public async Task MarkEventProcessed(string id)
         {
-            using (var db = ConstructDbContext())
-            {
-                var uid = new Guid(id);
-                var existingEntity = db.Set<PersistedEvent>()
-                    .Where(x => x.EventId == uid)
-                    .AsTracking()
-                    .First();
+            await using var db = ConstructDbContext();
+            var uid = new Guid(id);
+            var existingEntity = await db.Set<PersistedEvent>()
+                .Where(x => x.EventId == uid)
+                .AsTracking()
+                .FirstAsync();
 
-                existingEntity.IsProcessed = true;
-                db.SaveChanges();
-            }
+            existingEntity.IsProcessed = true;
+            await db.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<string>> GetEvents(string eventName, string eventKey, DateTime asOf)
         {
-            using (var db = ConstructDbContext())
-            {
-                var raw = db.Set<PersistedEvent>()
-                    .Where(x => x.EventName == eventName && x.EventKey == eventKey)
-                    .Where(x => x.EventTime >= asOf)
-                    .Select(x => x.EventId)
-                    .ToList();
+            await using var db = ConstructDbContext();
+            var raw = await db.Set<PersistedEvent>()
+                .Where(x => x.EventName == eventName && x.EventKey == eventKey)
+                .Where(x => x.EventTime >= asOf)
+                .Select(x => x.EventId)
+                .ToArrayAsync();
 
-                var result = new List<string>();
-
-                foreach (var s in raw)
-                    result.Add(s.ToString());
-
-                return result;
-            }
+            return raw.Select(s => s.ToString()).ToArray();
         }
 
         public async Task MarkEventUnprocessed(string id)
         {
-            using (var db = ConstructDbContext())
-            {
-                var uid = new Guid(id);
-                var existingEntity = db.Set<PersistedEvent>()
-                    .Where(x => x.EventId == uid)
-                    .AsTracking()
-                    .First();
+            await using var db = ConstructDbContext();
+            var uid = new Guid(id);
+            var existingEntity = await db.Set<PersistedEvent>()
+                .Where(x => x.EventId == uid)
+                .AsTracking()
+                .FirstAsync();
 
-                existingEntity.IsProcessed = false;
-                db.SaveChanges();
-            }
+            existingEntity.IsProcessed = false;
+            await db.SaveChangesAsync();
         }
 
         public async Task RemoveEventsByKey(string eventKey)
         {
-            using (var db=ConstructDbContext())
+            await using var db = ConstructDbContext();
+            var rowsToDelete = await db.Set<PersistedEvent>().Where(x => x.EventKey == eventKey).ToArrayAsync();
+            if (rowsToDelete.Any())
             {
-                var rowsToDelete = db.Set<PersistedEvent>().Where(x => x.EventKey == eventKey);
-                if (rowsToDelete.Any())
-                {
-                    db.Set<PersistedEvent>().RemoveRange(rowsToDelete);
-                }
-
-                db.SaveChanges();
+                db.Set<PersistedEvent>().RemoveRange(rowsToDelete);
             }
+
+            await db.SaveChangesAsync();
         }
 
         public async Task PersistErrors(IEnumerable<ExecutionError> errors)
         {
-            using (var db = ConstructDbContext())
+            await using var db = ConstructDbContext();
+            var executionErrors = errors as ExecutionError[] ?? errors.ToArray();
+            if (executionErrors.Any())
             {
-                var executionErrors = errors as ExecutionError[] ?? errors.ToArray();
-                if (executionErrors.Any())
+                foreach (var error in executionErrors)
                 {
-                    foreach (var error in executionErrors)
-                    {
-                        db.Set<PersistedExecutionError>().Add(error.ToPersistable());
-                    }
-                    db.SaveChanges();
-
+                    db.Set<PersistedExecutionError>().Add(error.ToPersistable());
                 }
+                
+                await db.SaveChangesAsync();
             }
         }
 
