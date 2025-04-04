@@ -59,12 +59,6 @@ namespace WorkflowCore.Services.BackgroundTasks
             {
                 try
                 {
-                    if (activeTasks.Count >= MaxConcurrentItems)
-                    {
-                        await Task.Delay(Options.IdleTime);
-                        continue;
-                    }
-
                     var item = await QueueProvider.DequeueWork(Queue, cancelToken);
 
                     if (item == null)
