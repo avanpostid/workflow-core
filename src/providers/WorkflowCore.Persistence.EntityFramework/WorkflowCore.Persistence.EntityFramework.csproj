@@ -20,7 +20,7 @@
 	<AssemblyVersion>2.0.0.0</AssemblyVersion>
 	<FileVersion>2.0.0.0</FileVersion>
 	<PackageId>Avanpost.WorkflowCore.Persistence.EntityFramework</PackageId>
-	<Version>2.0.0.0-beta3</Version>
+	<Version>2.0.0.0-beta5</Version>
 	<Authors>Хорошеньков Максим</Authors>
 	<Company>Avanpost</Company>
 	<PackageTags>workflow .NET Core state machine</PackageTags>
