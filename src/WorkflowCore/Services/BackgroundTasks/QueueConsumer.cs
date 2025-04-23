@@ -80,11 +80,11 @@ namespace WorkflowCore.Services.BackgroundTasks
                     {
                         try
                         {
-                            await ExecuteItem((string)data);
+                            await ProcessItemInternal((string)data);
                             while (EnableSecondPasses && secondPasses.Contains(item))
                             {
                                 secondPasses.Remove(item);
-                                await ExecuteItem((string)data);
+                                await ProcessItemInternal((string)data);
                             }
                         }
                         finally
@@ -114,7 +114,7 @@ namespace WorkflowCore.Services.BackgroundTasks
             await Task.WhenAll(activeTasks.Values);
         }
 
-        private async Task ExecuteItem(string itemId)
+        private async Task ProcessItemInternal(string itemId)
         {
             try
             {
