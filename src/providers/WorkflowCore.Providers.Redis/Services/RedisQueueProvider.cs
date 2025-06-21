@@ -32,7 +32,7 @@ namespace WorkflowCore.Providers.Redis.Services
             _logger = logFactory.CreateLogger(GetType());
         }
         
-        public async Task QueueWork(string id, QueueType queue)
+        public async ValueTask QueueWork(string id, QueueType queue)
         {
             if (_redis == null)
                 throw new InvalidOperationException();
@@ -40,7 +40,7 @@ namespace WorkflowCore.Providers.Redis.Services
             await _redis.ListRightPushAsync(GetQueueName(queue), id, When.Always);
         }
 
-        public async Task<string> DequeueWork(QueueType queue, CancellationToken cancellationToken)
+        public async ValueTask<string> DequeueWork(QueueType queue, CancellationToken cancellationToken)
         {
             if (_redis == null)
                 throw new InvalidOperationException();

@@ -11,7 +11,6 @@ namespace WorkflowCore.Services.BackgroundTasks
     internal abstract class QueueConsumer : IBackgroundTask
     {
         protected abstract QueueType Queue { get; }
-        protected virtual int MaxConcurrentItems => Math.Max(Environment.ProcessorCount, 2);
         protected virtual bool EnableSecondPasses => false;
 
         protected readonly IQueueProvider QueueProvider;
@@ -67,7 +66,7 @@ namespace WorkflowCore.Services.BackgroundTasks
                             await Task.Delay(Options.IdleTime, cancelToken);
                         continue;
                     }
-                    
+
                     if (activeTasks.ContainsKey(item))
                     {
                         secondPasses.Add(item);
@@ -76,7 +75,7 @@ namespace WorkflowCore.Services.BackgroundTasks
 
                     secondPasses.Remove(item);
 
-                    var task = new Task(async (object data) =>
+                    var task = new Task(async data =>
                     {
                         try
                         {
@@ -99,15 +98,16 @@ namespace WorkflowCore.Services.BackgroundTasks
                     {
                         activeTasks.Add(item, task);
                     }
-                    
+
                     task.Start();
                 }
-                catch (OperationCanceledException)
+                catch (OperationCanceledException ex)
                 {
+                    Logger.LogWarning(ex, "Operation cancelled");
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(ex.Message);
+                    Logger.LogError(ex, "Unhandled exception");
                 }
             }
 
@@ -126,7 +126,7 @@ namespace WorkflowCore.Services.BackgroundTasks
             }
             catch (Exception ex)
             {
-                Logger.LogError(default(EventId), ex, $"Error executing item {itemId} - {ex.Message}");
+                Logger.LogError(default, ex, $"Error executing item {itemId}");
             }
         }
     }

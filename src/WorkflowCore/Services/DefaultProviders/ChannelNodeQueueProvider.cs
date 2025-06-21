@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -20,18 +19,17 @@ namespace WorkflowCore.Services
 
         public bool IsDequeueBlocking => true;
 
-        public Task QueueWork(string id, QueueType queue)
+        public ValueTask QueueWork(string id, QueueType queue)
         {
             _queues[queue].Writer.TryWrite(id);
-            return Task.CompletedTask;
+            return default;
         }
 
-        public Task<string> DequeueWork(QueueType queue, CancellationToken cancellationToken)
+        public ValueTask<string> DequeueWork(QueueType queue, CancellationToken cancellationToken)
         {
-            if (_queues[queue].Reader.TryRead(out string id))
-                return Task.FromResult(id);
-
-            return Task.FromResult<string>(null);
+            return _queues[queue].Reader.TryRead(out var id) 
+                ? new ValueTask<string>(id) 
+                : new ValueTask<string>((string)null);
         }
 
         public Task Start()

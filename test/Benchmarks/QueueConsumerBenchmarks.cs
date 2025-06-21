@@ -14,9 +14,9 @@ public class QueueProvidersBenchmarks
     }
     
     [Benchmark]
-    public async Task SingleNodeQueueProvider_Benchmark()
+    public async Task BlockingCollectionQueueProvider_Benchmark()
     {
-        await BenchmarkInternal(new SingleNodeQueueProvider());
+        await BenchmarkInternal(new BlockingCollectionQueueProvider());
     }
 
     private async Task BenchmarkInternal(IQueueProvider queueProvider)

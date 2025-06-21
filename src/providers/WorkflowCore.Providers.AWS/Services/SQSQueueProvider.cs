@@ -26,14 +26,14 @@ namespace WorkflowCore.Providers.AWS.Services
             _client = new AmazonSQSClient(credentials, config);
         }
 
-        public async Task QueueWork(string id, QueueType queue)
+        public async ValueTask QueueWork(string id, QueueType queue)
         {
             var queueUrl = _queues[queue];
 
             await _client.SendMessageAsync(new SendMessageRequest(queueUrl, id));
         }
 
-        public async Task<string> DequeueWork(QueueType queue, CancellationToken cancellationToken)
+        public async ValueTask<string> DequeueWork(QueueType queue, CancellationToken cancellationToken)
         {
             var queueUrl = _queues[queue];
 

@@ -23,7 +23,7 @@ namespace WorkflowCore.QueueProviders.RabbitMQ.Services
             _connectionFactory = connectionFactory;
         }
 
-        public async Task QueueWork(string id, QueueType queue)
+        public async ValueTask QueueWork(string id, QueueType queue)
         {
             if (_connection == null)
                 throw new InvalidOperationException("RabbitMQ provider not running");
@@ -36,7 +36,7 @@ namespace WorkflowCore.QueueProviders.RabbitMQ.Services
             }
         }
 
-        public async Task<string> DequeueWork(QueueType queue, CancellationToken cancellationToken)
+        public async ValueTask<string> DequeueWork(QueueType queue, CancellationToken cancellationToken)
         {
             if (_connection == null)
                 throw new InvalidOperationException("RabbitMQ provider not running");

@@ -6,12 +6,8 @@ using WorkflowCore.Interface;
 
 namespace WorkflowCore.Services
 {
-    /// <summary>
-    /// Single node in-memory implementation of IQueueProvider
-    /// </summary>
-    public class SingleNodeQueueProvider : IQueueProvider
+    public class BlockingCollectionQueueProvider : IQueueProvider
     {
-        
         private readonly Dictionary<QueueType, BlockingCollection<string>> _queues = new Dictionary<QueueType, BlockingCollection<string>>()
         {
             [QueueType.Workflow] = new BlockingCollection<string>(),
@@ -21,18 +17,17 @@ namespace WorkflowCore.Services
 
         public bool IsDequeueBlocking => true;
 
-        public Task QueueWork(string id, QueueType queue)
+        public ValueTask QueueWork(string id, QueueType queue)
         {
             _queues[queue].Add(id);
-            return Task.CompletedTask;
+            return default;
         }
 
-        public Task<string> DequeueWork(QueueType queue, CancellationToken cancellationToken)
-        {            
-            if (_queues[queue].TryTake(out string id, 100, cancellationToken))
-                return Task.FromResult(id);
-
-            return Task.FromResult<string>(null);
+        public ValueTask<string> DequeueWork(QueueType queue, CancellationToken cancellationToken)
+        {
+            return _queues[queue].TryTake(out var id, 100, cancellationToken) 
+                ? new ValueTask<string>(id) 
+                : new ValueTask<string>((string)null);
         }
 
         public Task Start()

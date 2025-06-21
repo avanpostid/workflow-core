@@ -84,12 +84,12 @@ namespace WorkflowCore.QueueProviders.SqlServer.Services
         /// <param name="id"></param>
         /// <param name="queue"></param>
         /// <returns></returns>
-        public async Task QueueWork(string id, QueueType queue)
+        public async ValueTask QueueWork(string id, QueueType queue)
         {
             if (string.IsNullOrEmpty(id))
                 throw new ArgumentNullException(nameof(id), "Param id must not be null");
 
-            SqlConnection cn = new SqlConnection(_connectionString);
+            var cn = new SqlConnection(_connectionString);
             try
             {
                 cn.Open();
@@ -116,7 +116,7 @@ namespace WorkflowCore.QueueProviders.SqlServer.Services
         /// <param name="queue"></param>
         /// <param name="cancellationToken">cancellationToken</param>
         /// <returns>Next id from queue, null if no message arrives in one second.</returns>
-        public async Task<string> DequeueWork(QueueType queue, CancellationToken cancellationToken)
+        public async ValueTask<string> DequeueWork(QueueType queue, CancellationToken cancellationToken)
         {
             SqlConnection cn = new SqlConnection(_connectionString);
             try

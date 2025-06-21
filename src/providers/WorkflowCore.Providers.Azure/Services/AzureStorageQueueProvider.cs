@@ -28,13 +28,13 @@ namespace WorkflowCore.Providers.Azure.Services
             _queues[QueueType.Index] = client.GetQueueReference("workflowcore-index");
         }
 
-        public async Task QueueWork(string id, QueueType queue)
+        public async ValueTask QueueWork(string id, QueueType queue)
         {
             var msg = new CloudQueueMessage(id);
             await _queues[queue].AddMessageAsync(msg);
         }
 
-        public async Task<string> DequeueWork(QueueType queue, CancellationToken cancellationToken)
+        public async ValueTask<string> DequeueWork(QueueType queue, CancellationToken cancellationToken)
         {
             CloudQueue cloudQueue = _queues[queue];
 

@@ -16,14 +16,14 @@ namespace WorkflowCore.Interface
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        Task QueueWork(string id, QueueType queue);
+        ValueTask QueueWork(string id, QueueType queue);
 
         /// <summary>
         /// Fetches the next work item from the front of the process queue.
         /// If the queue is empty, NULL is returned
         /// </summary>
         /// <returns></returns>
-        Task<string> DequeueWork(QueueType queue, CancellationToken cancellationToken);
+        ValueTask<string> DequeueWork(QueueType queue, CancellationToken cancellationToken);
 
         bool IsDequeueBlocking { get; }
 
