@@ -11,7 +11,7 @@ namespace WorkflowCore.UnitTests.Services;
 public class QueueProvidersTests
 {
     [Fact]
-    public async Task ChannelNodeQueueProvider_ForDotTrace()
+    public async Task ChannelNodeQueueProvider_ForDotTrace_10_Seconds_After_WorkCompletion()
     {
         var queueProvider = new ChannelNodeQueueProvider();
         
@@ -30,10 +30,16 @@ public class QueueProvidersTests
         {
             dequeueWork = await queueProvider.DequeueWork(QueueType.Event, CancellationToken.None);
         }
+        
+        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        while (!cts.IsCancellationRequested)
+        {
+            await queueProvider.DequeueWork(QueueType.Event, CancellationToken.None);
+        }
     }
     
     [Fact]
-    public async Task BlockingCollectionQueueProvider_ForDotTrace()
+    public async Task BlockingCollectionQueueProvider_ForDotTrace_10_Seconds_After_WorkCompletion()
     {
         var queueProvider = new BlockingCollectionQueueProvider();
         
@@ -51,6 +57,12 @@ public class QueueProvidersTests
         while (dequeueWork is not null)
         {
             dequeueWork = await queueProvider.DequeueWork(QueueType.Event, CancellationToken.None);
+        }
+        
+        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        while (!cts.IsCancellationRequested)
+        {
+            await queueProvider.DequeueWork(QueueType.Event, CancellationToken.None);
         }
     }
     
