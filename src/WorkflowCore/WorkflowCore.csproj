@@ -21,7 +21,7 @@
     <PackageReleaseNotes></PackageReleaseNotes>
     <PackageIconUrl>https://raw.githubusercontent.com/avanpostid/workflow-core/master/src/logo.png</PackageIconUrl>
     <PackageId>Avanpost.WorkflowCore</PackageId>
-	<Version>2.1.0.0-beta1</Version>
+	<Version>2.1.0.0-beta2</Version>
 	<Authors>Хорошеньков Максим</Authors>
 	<Company>Avanpost</Company>
   </PropertyGroup>

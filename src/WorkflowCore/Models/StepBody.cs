@@ -6,7 +6,10 @@ namespace WorkflowCore.Models
 {
     public abstract class StepBody : IStepBody
     {
-        public abstract ExecutionResult Run(IStepExecutionContext context);
+        public virtual ExecutionResult Run(IStepExecutionContext context)
+        {
+            throw new NotImplementedException();
+        }
 
         public virtual ValueTask<ExecutionResult> RunAsync(IStepExecutionContext context)
         {
