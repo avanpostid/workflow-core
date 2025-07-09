@@ -15,7 +15,7 @@ namespace WorkflowCore.Sample03.Steps
         public int Output { get; set; }
 
 
-        public override async Task<ExecutionResult> RunAsync(IStepExecutionContext context)
+        public override async ValueTask<ExecutionResult> RunAsync(IStepExecutionContext context)
         {
             Output = (Input1 + Input2);
             return ExecutionResult.Next();

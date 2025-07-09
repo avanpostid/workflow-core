@@ -96,7 +96,7 @@ namespace WorkflowCore.UnitTests
             public int Value1 { get; set; }
             public object Value2 { get; set; }
 
-            public Task<ExecutionResult> RunAsync(IStepExecutionContext context)
+            public ValueTask<ExecutionResult> RunAsync(IStepExecutionContext context)
             {
                 throw new NotImplementedException();
             }

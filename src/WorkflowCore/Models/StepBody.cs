@@ -8,9 +8,9 @@ namespace WorkflowCore.Models
     {
         public abstract ExecutionResult Run(IStepExecutionContext context);
 
-        public Task<ExecutionResult> RunAsync(IStepExecutionContext context)
+        public virtual ValueTask<ExecutionResult> RunAsync(IStepExecutionContext context)
         {
-            return Task.FromResult(Run(context));
+            return new ValueTask<ExecutionResult>(Run(context));
         }        
 
         protected ExecutionResult OutcomeResult(object value)

@@ -9,6 +9,7 @@ using WorkflowCore.Services;
 using FluentAssertions;
 using Xunit;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace WorkflowCore.UnitTests.Services
 {
@@ -59,7 +60,7 @@ namespace WorkflowCore.UnitTests.Services
         {
             //arrange            
             var step1Body = A.Fake<IStepBody>();
-            A.CallTo(() => step1Body.RunAsync(A<IStepExecutionContext>.Ignored)).Returns(ExecutionResult.Next());
+            A.CallTo(() => step1Body.RunAsync(A<IStepExecutionContext>.Ignored)).Returns(new ValueTask<ExecutionResult>(ExecutionResult.Next()));
             WorkflowStep step1 = BuildFakeStep(step1Body);
             Given1StepWorkflow(step1, "Workflow", 1);
 
@@ -89,7 +90,7 @@ namespace WorkflowCore.UnitTests.Services
         {
             //arrange            
             var step1Body = A.Fake<IStepBody>();
-            A.CallTo(() => step1Body.RunAsync(A<IStepExecutionContext>.Ignored)).Returns(ExecutionResult.Next());
+            A.CallTo(() => step1Body.RunAsync(A<IStepExecutionContext>.Ignored)).Returns(new ValueTask<ExecutionResult>(ExecutionResult.Next()));
             WorkflowStep step1 = BuildFakeStep(step1Body);
             Given1StepWorkflow(step1, "Workflow", 1);
 
@@ -120,7 +121,7 @@ namespace WorkflowCore.UnitTests.Services
         {
             //arrange            
             var step1Body = A.Fake<IStepBody>();
-            A.CallTo(() => step1Body.RunAsync(A<IStepExecutionContext>.Ignored)).Returns(ExecutionResult.Next());
+            A.CallTo(() => step1Body.RunAsync(A<IStepExecutionContext>.Ignored)).Returns(new ValueTask<ExecutionResult>(ExecutionResult.Next()));
             WorkflowStep step1 = BuildFakeStep(step1Body);
             Given1StepWorkflow(step1, "Workflow", 1);
 
@@ -151,7 +152,7 @@ namespace WorkflowCore.UnitTests.Services
             var param = A.Fake<IStepParameter>();
 
             var step1Body = A.Fake<IStepWithProperties>();            
-            A.CallTo(() => step1Body.RunAsync(A<IStepExecutionContext>.Ignored)).Returns(ExecutionResult.Next());
+            A.CallTo(() => step1Body.RunAsync(A<IStepExecutionContext>.Ignored)).Returns(new ValueTask<ExecutionResult>(ExecutionResult.Next()));
             WorkflowStep step1 = BuildFakeStep(step1Body, new List<IStepParameter>()
                 {
                     param
@@ -190,7 +191,7 @@ namespace WorkflowCore.UnitTests.Services
 
             var step1Body = A.Fake<IStepWithProperties>();
             A.CallTo(() => step1Body.Property1).Returns(7);
-            A.CallTo(() => step1Body.RunAsync(A<IStepExecutionContext>.Ignored)).Returns(ExecutionResult.Next());
+            A.CallTo(() => step1Body.RunAsync(A<IStepExecutionContext>.Ignored)).Returns(new ValueTask<ExecutionResult>(ExecutionResult.Next()));
             WorkflowStep step1 = BuildFakeStep(step1Body, new List<IStepParameter>(), new List<IStepParameter>()
                 {
                     param
@@ -261,7 +262,7 @@ namespace WorkflowCore.UnitTests.Services
         {
             //arrange            
             var step1Body = A.Fake<IStepBody>();
-            A.CallTo(() => step1Body.RunAsync(A<IStepExecutionContext>.Ignored)).Returns(ExecutionResult.Persist(null));
+            A.CallTo(() => step1Body.RunAsync(A<IStepExecutionContext>.Ignored)).Returns(new ValueTask<ExecutionResult>(ExecutionResult.Persist(null)));
             WorkflowStep step1 = BuildFakeStep(step1Body);
             Given1StepWorkflow(step1, "Workflow", 1);
 
@@ -290,7 +291,7 @@ namespace WorkflowCore.UnitTests.Services
         {
             //arrange            
             var step1Body = A.Fake<IStepBody>();
-            A.CallTo(() => step1Body.RunAsync(A<IStepExecutionContext>.Ignored)).Returns(ExecutionResult.Persist(null));
+            A.CallTo(() => step1Body.RunAsync(A<IStepExecutionContext>.Ignored)).Returns(new ValueTask<ExecutionResult>(ExecutionResult.Persist(null)));
             WorkflowStep step1 = BuildFakeStep(step1Body);
             Given1StepWorkflow(step1, "Workflow", 1);
 
