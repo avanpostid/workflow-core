@@ -31,6 +31,12 @@ namespace WorkflowCore.Services.DefinitionStorage
             _registry.RegisterWorkflow(def);
             return def;
         }
+        
+        public WorkflowDefinition LoadDefinition(WorkflowDefinition workflowDefinition)
+        {
+            _registry.RegisterWorkflow(workflowDefinition);
+            return workflowDefinition;
+        }
 
         private WorkflowDefinition Convert(DefinitionSourceV1 source)
         {
