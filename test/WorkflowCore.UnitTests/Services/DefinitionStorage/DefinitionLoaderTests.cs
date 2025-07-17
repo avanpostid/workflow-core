@@ -2,8 +2,11 @@
 using FluentAssertions;
 using System;
 using System.Linq;
+using Newtonsoft.Json;
 using WorkflowCore.Interface;
 using WorkflowCore.Models;
+using WorkflowCore.Primitives;
+using WorkflowCore.Services;
 using WorkflowCore.Services.DefinitionStorage;
 using WorkflowCore.TestAssets.DataTypes;
 using Xunit;
@@ -55,6 +58,20 @@ namespace WorkflowCore.UnitTests.Services.DefinitionStorage
             A.CallTo(() => _registry.RegisterWorkflow(A<WorkflowDefinition>.That.Matches(MatchTestDefinition, ""))).MustHaveHappened();
         }
 
+        [Fact]
+        public void GenerateByWorkflowBuilder()
+        {
+            // Arrange
+            var workflowBuilder = new WorkflowBuilder();
+            workflowBuilder.AddStep(new EndStep());
+            var workflowDefinition = workflowBuilder.Build("Test1", 1);
+            
+            // Act & Assert
+            var result = _subject.LoadWorkflowDefinition(workflowDefinition);
+
+            Assert.Equal(workflowDefinition.Id, result.Id);
+        }
+        
 
         private bool MatchTestDefinition(WorkflowDefinition def)
         {

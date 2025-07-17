@@ -6,6 +6,6 @@ namespace WorkflowCore.Interface
     {
         WorkflowDefinition LoadDefinition(string json);
 
-        WorkflowDefinition LoadWorkflowDefinition(string json);
+        WorkflowDefinition LoadWorkflowDefinition(WorkflowDefinition workflowDefinition);
     }
 }

@@ -32,9 +32,8 @@ namespace WorkflowCore.Services.DefinitionStorage
             return def;
         }
         
-        public WorkflowDefinition LoadWorkflowDefinition(string json)
+        public WorkflowDefinition LoadWorkflowDefinition(WorkflowDefinition workflowDefinition)
         {
-            var workflowDefinition = JsonConvert.DeserializeObject<WorkflowDefinition>(json);
             _registry.RegisterWorkflow(workflowDefinition);
             return workflowDefinition;
         }
